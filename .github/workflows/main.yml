@@ -32,8 +32,8 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
 
-      # - name: Copy .env
-      #   run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
       - name: Generate Application Key
         run: php artisan key:generate
@@ -65,11 +65,11 @@ jobs:
         with:
           server_address: 'smtp.gmail.com'
           server_port: 465
-          username: ${{ secrets.GMAIL_USERNAME }}
-          password: ${{ secrets.GMAIL_PASSWORD }}
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
           subject: 'Build Failed: ${{ github.repository }}'
           to: 'angousa168@gmail.com, e20200606@itc.edu.kh, tongsreng@itc.edu.kh'
-          from: ${{ secrets.GMAIL_USERNAME }}
+          from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             The build for the repository ${{ github.repository }} has failed.
             Commit: ${{ github.sha }}
