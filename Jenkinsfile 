@@ -1,27 +1,63 @@
-pipeline {
-    agent any // windows agent, Jenkins-Laravel (other machine)
+ipeline {
+    agent any
+
     stages {
-        stage('Fetch from GitHub') { // build steps
+        stage('Checkout') {
             steps {
-                echo 'Fetching from GitHub'
-                git branch: 'master', url:'https://github.com/ANG-OUSA/Final_DevOps.git'
+                git url: 'https://github.com/ANG-OUSA/Final_DevOps.git', branch: 'main'
             }
         }
-        stage('Build using Tools') {
+
+        stage('Build') {
             steps {
-                echo 'Compiling code...'
-                sh 'cp .env.example .env'
-                sh 'composer install && php artisan key:generate && npm install && npm run build'
+                sh 'npm install'
+                sh 'composer install'
             }
         }
-        stage('Test the app') {
+
+        stage('Test') {
             steps {
-                echo 'Testing unit tests...'
-                echo 'Testing features...'
-                sh 'php artisan test'
+                sh 'npm test'
+                sh 'php vendor/bin/phpunit'
+            }
+        }
+
+        stage('Backup') {
+            steps {
+                sh 'mysqldump -u root -pYOURPASSWORD dbname > /backup/db_backup_$(date +%F).sql'
             }
         }
     }
+
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+}
+
+// pipeline {
+//     agent any // windows agent, Jenkins-Laravel (other machine)
+//     stages {
+//         stage('Fetch from GitHub') { // build steps
+//             steps {
+//                 echo 'Fetching from GitHub'
+//                 git branch: 'master', url:'https://github.com/ANG-OUSA/Final_DevOps.git'
+//             }
+//         }
+//         stage('Build using Tools') {
+//             steps {
+//                 echo 'Compiling code...'
+//                 sh 'cp .env.example .env'
+//                 sh 'composer install && php artisan key:generate && npm install && npm run build'
+//             }
+//         }
+//         stage('Test the app') {
+//             steps {
+//                 echo 'Testing unit tests...'
+//                 echo 'Testing features...'
+//                 sh 'php artisan test'
+//             }
+//         }
+//     }
     // post {
     //     success {
     //         mail(
@@ -38,4 +74,4 @@ pipeline {
     //         )
     //     }
     // }
-}
+// }
